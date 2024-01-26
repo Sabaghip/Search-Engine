@@ -45,6 +45,7 @@ def tokenize(input:str)->list[str]:
     word = []
     for i in range(len(input)):
         if input[i] in space_chars:
+
             if len(word) < 1:
                 continue
             #check verbs
@@ -72,6 +73,7 @@ def tokenize(input:str)->list[str]:
             word = []
         else:
             word.append(input[i])
+    output.append("".join(word))
     return output
 
 def normalize(input:list[str])->list[str]:
@@ -114,6 +116,8 @@ def stemming(input:list[str])->list[str]:
     output = []
     for i in input:
         temp = stem.stem(i)
+        if len(temp) < 3:
+            temp = i
         output.append(lem.lemmatize(temp, 'V'))
     return output
 

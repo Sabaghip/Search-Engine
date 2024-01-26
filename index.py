@@ -1,6 +1,7 @@
 import heapq
 import pickle
 import preprocess
+from math import log10
     
 class PositionalPosting:
     def __init__(self, doc_id: int, tf : int, positions):
@@ -9,9 +10,10 @@ class PositionalPosting:
         self.positions = positions
 
     def getDocID(self):
-        return self.docID
+        return self.doc_id
 
     def getTF(self):
+        self.tf = len(self.positions)
         return self.tf
 
     def getPositions(self):
@@ -22,7 +24,6 @@ class PostingsList:
         self.df = 0
         self.list = []
         self.tf = 0
-        self.champions = []
 
     def getPostings(self):
         return self.list
@@ -50,19 +51,22 @@ class PostingsList:
             res.append((p.getDocID(), p.getTF()))
         return res
 
-    def addChampion(self, p):
-        self.list.append(p)
-
 class InvertedIndex:
     def __init__(self, docs_num : int):
         self.dict = {}
         self.docs_num= docs_num
         self.champions = {}
+        self.vertices = {}
 
     def getPostingList(self, term: str) -> PostingsList:
         if term not in self.dict:
             return None
         return self.dict[term]
+
+    def getChampionPostingList(self, term: str) -> PostingsList:
+        if term not in self.champions:
+            return None
+        return self.champions[term]
 
     def getdocsNum(self):
         return self.docs_num
@@ -77,6 +81,7 @@ class InvertedIndex:
         if tf >= 3:
             if term not in self.champions:
                 self.champions[term] = PostingsList()
+            self.champions[term].addDF()
             self.champions[term].addPosting(PositionalPosting(doc_id, tf, positions))
 
 
@@ -118,7 +123,22 @@ class InvertedIndex:
             obj = pickle.load(file)
         return obj
 
+    def addScore(self,token: str):
+        postings = self.getPostingList(token)
+        id_tf_pairs = postings.getAllDocIdTF()
+        df = postings.getDF()
+        for (id, tf) in id_tf_pairs:
+            try:
+                self.vertices[str(id)][token] = (1 + log10(tf)) * log10(self.getdocsNum() / df)
+            except:
+                pass
 
+    def createVers(self, data):
+        for i in range(len(data)):
+            doc_id = str(i)
+            self.vertices[doc_id] = {}
+        for i in self.dict:
+            self.addScore(i)
 
 def create_index(data, delete):
     inverted = InvertedIndex(len(data))
@@ -142,5 +162,8 @@ def create_index(data, delete):
     inverted_deletes = inverted.deleteRepeatedWords(delete)
     print("normal deletes = ", inverted_deletes[0])
     print("champion deletes = ", inverted_deletes[1])
-        
+    print("creating vers...")
+    inverted.createVers(data)
+    print("vers finished")
+
     return inverted
