@@ -1,4 +1,9 @@
 import json
+from hazm import Lemmatizer
+from hazm import Stemmer
+
+
+   
 
 space = ' '
 space_chars = [' ', '\t', '\n', '\xa0']
@@ -31,9 +36,9 @@ should_change_to = {'ئ': 'ی', 'ي': 'ی', 'یٰ':'ی', 'ك': 'ک', 'آ': 'ا',
               'ﷷ': 'علیه-السلام', 'ﷸ': "صلی-الله-علیه-وسلم", 'ﷹ': "صلی-الله-علیه-وسلم",
               }
 
+lem = Lemmatizer()
+stem = Stemmer()
 
-with open("G:/IR-Project/IR_data_news_12k.json", 'r') as file:
-    data = json.load(file)
 
 def tokenize(input:str)->list[str]:
     output = []
@@ -105,31 +110,15 @@ def normalize(input:list[str])->list[str]:
 
     return output
 
-def stem(input:list[str])->list[str]:
-    return input
+def stemming(input:list[str])->list[str]:
+    output = []
+    for i in input:
+        temp = stem.stem(i)
+        output.append(lem.lemmatize(temp, 'V'))
+    return output
 
 def preproccess(input : str)->list[str]:
     tokenized = tokenize(input)
     normalized = normalize(tokenized)
-    output = stem(normalized)
+    output = stemming(normalized)
     return output
-
-for i in range(len(data)):
-    content = data[str(i)]['content']
-    tokens = preproccess(content)
-    doc_terms = {}
-    for j in range(len(tokens)):
-        # if(tokens[j].__contains__("۱۲۰")):
-        #     print(tokens[j])
-        if tokens[j] not in doc_terms:
-            doc_terms[tokens[j]] = [0, []]
-        
-        doc_terms[tokens[j]][0] += 1
-        doc_terms[tokens[j]][1].append(j + 1)
-    
-
-    if (i + 1) % 500 == 0:
-        print("done processing doc: ", i + 1)
-        # print(doc_terms)
-#for i in range(len(temp)):
-#    print("".join(temp[i]))
