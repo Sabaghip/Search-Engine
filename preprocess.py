@@ -17,7 +17,13 @@ to_be_deleted_chars = ['\u064b', '\u064c', '\u064d', '\u064e', '\u064f', '\u0650
                  '\u0620', '!', ',', '?', ':', '،', '؛', '.', '(', ')', '؟', '«', '»',
                  '#', '*', '《', '》', '\"', '[', ']', '{', '}', '-', '/']
 special_space = '|'
-abbrs = {"AFC":"کنفدراسیون فوتبال آسیا", "(AFC)":"کنفدراسیون فوتبال آسیا"}
+abbrs = {"AFC":"کنفدراسیون فوتبال آسیا", "(AFC)":"کنفدراسیون فوتبال آسیا", "NBA":"اتحادیۀ ملی بسکتبال", 
+"(NBA)":"اتحادیۀ ملی بسکتبال", "NFL":"لیگ ملی فوتبال", "(NFL)":"لیگ ملی فوتبال", 
+"IWF":"فدراسیون جهانی وزنه برداری", "(IWF)":"فدراسیون جهانی وزنه برداری",
+ "IOC":"کمیته بین المللی المپیک", "(IOC)":"کمیته بین المللی المپیک", 
+ "JNTO":"سازمان گردشگری ژاپن", "(JNTO)":"سازمان گردشگری ژاپن", "VAR":"کمک داور ویدیویی", 
+ "(VAR)":"کمک داور ویدیویی", "CAS":"دادگاه داوری ورزشی", "(CAS)":"دادگاه داوری ورزشی", 
+ "Covid":"کرونا", "(Covid)":"کرونا"}
 numbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹']
 
 should_change_to = {'ئ': 'ی', 'ي': 'ی', 'یٰ':'ی', 'ك': 'ک', 'آ': 'ا',
@@ -45,7 +51,6 @@ def tokenize(input:str)->list[str]:
     word = []
     for i in range(len(input)):
         if input[i] in space_chars:
-
             if len(word) < 1:
                 continue
             #check verbs
@@ -68,12 +73,15 @@ def tokenize(input:str)->list[str]:
                     output.append("@" + "".join(word[:-1]))
                     word = []
                     continue
-
             output.append("".join(word))
             word = []
         else:
             word.append(input[i])
-    output.append("".join(word))
+    if "".join(word) in abbrs:
+        for j in abbrs["".join(word)].split():
+            output.append(j)
+    else:
+        output.append("".join(word))
     return output
 
 def normalize(input:list[str])->list[str]:
@@ -88,7 +96,6 @@ def normalize(input:list[str])->list[str]:
                     word.append(should_change_to[input[i][j]])
                 else:
                     word.append(input[i][j])
-
                 if word[j] in to_be_deleted_chars or (number_flag and word[j] not in numbers):
                     output.append("".join(word[k:j]))
                     k = j + 1
@@ -122,7 +129,9 @@ def stemming(input:list[str])->list[str]:
     return output
 
 def preproccess(input : str)->list[str]:
+    print("ppp")
     tokenized = tokenize(input)
     normalized = normalize(tokenized)
     output = stemming(normalized)
+    print("u", output)
     return output

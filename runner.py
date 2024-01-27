@@ -12,11 +12,11 @@ def print_results(query, result):
         for i in range(len(content)):
             if content[i]==query.split()[0]:
                 if i < 6:
-                    print("".join(content[:10]))
+                    print(" ".join(content[:10]))
                 elif i > len(content) - 5:
-                    print("".join(content[i-5:]))
+                    print(" ".join(content[i-5:]))
                 else:
-                    print("".join(content[i-5:i+5]))
+                    print(" ".join(content[i-5:i+5]))
                 print("============================================================\n============================================================")
         print("\n------------------------------------------------------------\n------------------------------------------------------------\n")
 
