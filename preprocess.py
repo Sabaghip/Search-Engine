@@ -129,9 +129,7 @@ def stemming(input:list[str])->list[str]:
     return output
 
 def preproccess(input : str)->list[str]:
-    print("ppp")
     tokenized = tokenize(input)
     normalized = normalize(tokenized)
     output = stemming(normalized)
-    print("u", output)
     return output
