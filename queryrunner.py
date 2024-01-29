@@ -103,7 +103,10 @@ class QueryProcessor:
         postings = self.index.getPostingList(token)
         result = {}
         for i in postings.list:
-            result[str(i.getDocID())] = scores[str(i.getDocID())][token]
+            try:
+                result[str(i.getDocID())] = scores[str(i.getDocID())][token]
+            except:
+                result[str(i.getDocID())]=0
         return result
 
     def getScoreListChampion(self, token: str):
@@ -111,7 +114,10 @@ class QueryProcessor:
         postings = self.index.getChampionPostingList(token)
         result = {}
         for i in postings.list:
-            result[str(i.getDocID())] = scores[str(i.getDocID())][token]
+            try:
+                result[str(i.getDocID())] = scores[str(i.getDocID())][token]
+            except:
+                result[str(i.getDocID())] = 0
         return result
 
     def getSimilarity(self, vector1: dict, vector2: dict):
@@ -129,6 +135,9 @@ class QueryProcessor:
         score = 0.0
         for i in vector1:
             if i in vector2:
-                score += (vector1[i] / squared_sum1) * (vector2[i] / squared_sum2)
+                try:
+                    score += (vector1[i] / squared_sum1) * (vector2[i] / squared_sum2)
+                except:
+                    score += 0
         
         return score 

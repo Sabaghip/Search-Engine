@@ -1,12 +1,12 @@
 import json
 import index
 
-with open("G:/IR-Project/IR_data_news_12k.json", 'r') as file:
+with open("IR_data_news_5k 2.json", 'r') as file:
     data = json.load(file)
-
+print(len(data))
 
 inverted = index.create_index(data, delete=50)
 
 print("saving inverted...")
-index.InvertedIndex.save(inverted, "G:/IR-Project/ii-deleted-terms.pkl", "wb")
+index.InvertedIndex.save(inverted, "G:/IR-Project/test.pkl", "wb")
 print("saved.")

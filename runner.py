@@ -2,6 +2,8 @@ import time
 import json
 import queryrunner
 import index
+import preprocess
+from math import log10, sqrt
 
 def print_results(query, result):
     for i in range(len(result)):
@@ -21,10 +23,10 @@ def print_results(query, result):
         print("\n------------------------------------------------------------\n------------------------------------------------------------\n")
 
 
-with open("G:/IR-Project/IR_data_news_12k.json", 'r') as file:
+with open("G:/IR-Project/IR_data_news_5k 2.json", 'r') as file:
     data = json.load(file)
+inverted = index.InvertedIndex.load("G:/IR-Project/index_second_with_50_deleted.pkl", "rb")
 
-inverted = index.InvertedIndex.load("G:/IR-Project/ii-deleted-terms.pkl", "rb")
 queryrunner = queryrunner.QueryProcessor(inverted)
 
 while True:
@@ -32,7 +34,7 @@ while True:
     if query == "exit:::":
         break
     start = time.time()
-    result = queryrunner.findChampion(query, 10)
+    result = queryrunner.findNormal(query, 10)
     end = time.time()
     print("time : ", end-start)
     print_results(query, result)

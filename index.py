@@ -134,29 +134,28 @@ class InvertedIndex:
                 pass
 
     def createVers(self, data):
-        for i in range(len(data)):
-            doc_id = str(i)
+        for i in data:
+            doc_id = i
             self.vertices[doc_id] = {}
         for i in self.dict:
             self.addScore(i)
 
 def create_index(data, delete):
     inverted = InvertedIndex(len(data))
-    for i in range(len(data)):
-        content = data[str(i)]['content']
+    for i in data:
+        content = data[i]['content']
         tokens = preprocess.preproccess(content)
         terms = {}
         for j in range(len(tokens)):
             if tokens[j] not in terms:
                 terms[tokens[j]] = [0, []]
-
             terms[tokens[j]][0] += 1
             terms[tokens[j]][1].append(j + 1)
 
         for key in terms:
-            inverted.addPosting(key, i + 1, terms[key][0], terms[key][1])
+            inverted.addPosting(key, int(i) + 1, terms[key][0], terms[key][1])
 
-        if i % 1000 == 0:
+        if int(i) % 1000 == 0:
             print("docs processed: ", i)
     print("processing finished\ndeleting for inverted...")
     inverted_deletes = inverted.deleteRepeatedWords(delete)
